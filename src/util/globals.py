@@ -1,18 +1,9 @@
-from pathlib import Path
+# globals.py — patched to remove dependency on globals.yml
 
-import yaml
+data = {
+    "device": "cuda",
+    "dtype": "float32"
+}
 
-with open("globals.yml", "r") as stream:
-    data = yaml.safe_load(stream)
-
-(RESULTS_DIR, DATA_DIR, STATS_DIR, HPARAMS_DIR,) = (
-    Path(z)
-    for z in [
-        data["RESULTS_DIR"],
-        data["DATA_DIR"],
-        data["STATS_DIR"],
-        data["HPARAMS_DIR"],
-    ]
-)
-
-REMOTE_ROOT_URL = data["REMOTE_ROOT_URL"]
+def get(key, default=None):
+    return data.get(key, default)
