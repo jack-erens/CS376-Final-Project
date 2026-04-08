@@ -47,7 +47,8 @@ def main():
     args = parser.parse_args()
 
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
-    model = AutoModelForCausalLM.from_pretrained(args.model_name).eval().cuda()
+    model = AutoModelForCausalLM.from_pretrained(args.model_name).eval()
+    model = model.to("cuda" if torch.cuda.is_available() else "cpu")
     set_requires_grad(False, model)
 
     for layer_num in args.layers:
@@ -153,14 +154,14 @@ def layer_stats(
     with torch.no_grad():
         for batch_group in progress(loader, total=batch_count):
             for batch in batch_group:
-                batch = dict_to_(batch, "cuda")
+                batch = dict_to_(batch, model.device)
                 with Trace(
                     model, layer_name, retain_input=True, retain_output=False, stop=True
                 ) as tr:
                     model(**batch)
                 feats = flatten_masked_batch(tr.input, batch["attention_mask"])
                 # feats = flatten_masked_batch(tr.output, batch["attention_mask"])
-                feats = feats.to(dtype=dtype)
+                feats = feats.to(dtype=dtype, device=model.device)
                 stat.add(feats)
     return stat
 
