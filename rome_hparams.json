@@ -3,7 +3,7 @@
   "fact_token": "last",
 
   "v_num_grad_steps": 30,
-  "v_lr": 0.02,
+  "v_lr": 0.03,
   "v_loss_layer": 6,
   "v_weight_decay": 0.0,
   "clamp_norm_factor": 4.0,
